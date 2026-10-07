@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathVisual Generator Studio — Buat Visual Matematika, Ciptakan Soal Bermakna</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Style CSS Eksternal -->
+    <link rel="stylesheet" href="style.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Script JS Eksternal -->
+    <script src="script.js" defer></script>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-900 text-slate-100 antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="no-print bg-slate-800/90 backdrop-blur border-b border-slate-700/80 sticky top-0 z-50 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <!-- Logo & Brand Title -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('beranda')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 text-white font-bold text-xl">
+                    <i class="fa-solid font-mono fa-square-root-variable"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight text-white flex items-center gap-2">
+                        MathVisual <span class="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent font-extrabold">Studio</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Buat Visual Matematika, Ciptakan Soal Bermakna</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="hidden md:flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700/60 text-sm font-medium">
+                <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn px-3.5 py-1.5 rounded-lg transition text-sky-400 bg-slate-800 shadow">
+                    <i class="fa-solid fa-house mr-1.5"></i>Beranda
+                </button>
+                <button onclick="switchTab('wizard')" id="nav-wizard" class="nav-btn px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Buat Visual
+                </button>
+                <button onclick="switchTab('matematika')" id="nav-matematika" class="nav-btn px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-compass-drafting mr-1.5"></i>Matematika
+                </button>
+                <button onclick="switchTab('soal')" id="nav-soal" class="nav-btn px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-file-pen mr-1.5"></i>Buat Soal
+                </button>
+                <button onclick="switchTab('editor')" id="nav-editor" class="nav-btn px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-layer-group mr-1.5"></i>Editor Annotations
+                </button>
+                <button onclick="switchTab('koleksi')" id="nav-koleksi" class="nav-btn px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-folder-open mr-1.5"></i>Koleksi
+                </button>
+                <button onclick="switchTab('lkpd')" id="nav-lkpd" class="nav-btn px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-print mr-1.5"></i>Studio LKPD
+                </button>
+            </nav>
+
+            <!-- Action Quick Tools -->
+            <div class="flex items-center gap-2">
+                <button onclick="resetAppDefaults()" class="text-xs bg-slate-700/80 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg font-medium transition" title="Reset Parameter">
+                    <i class="fa-solid fa-rotate-left mr-1"></i>Reset
+                </button>
+                <button onclick="exportSVGCanvas()" class="text-xs bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-2 rounded-lg font-semibold shadow-md shadow-sky-600/30 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-download"></i>Unduh SVG
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Bar -->
+    <div class="no-print md:hidden bg-slate-800 border-b border-slate-700 p-2 overflow-x-auto flex items-center gap-1 text-xs whitespace-nowrap">
+        <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="mob-nav-btn px-3 py-1.5 rounded-lg bg-sky-500 text-white font-medium">Beranda</button>
+        <button onclick="switchTab('wizard')" id="mob-nav-wizard" class="mob-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Buat Visual</button>
+        <button onclick="switchTab('matematika')" id="mob-nav-matematika" class="mob-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Matematika</button>
+        <button onclick="switchTab('soal')" id="mob-nav-soal" class="mob-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Buat Soal</button>
+        <button onclick="switchTab('editor')" id="mob-nav-editor" class="mob-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Editor</button>
+        <button onclick="switchTab('koleksi')" id="mob-nav-koleksi" class="mob-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Koleksi</button>
+        <button onclick="switchTab('lkpd')" id="mob-nav-lkpd" class="mob-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">LKPD</button>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 no-print">
+
+        <!-- ================= TAB 1: BERANDA ================= -->
+        <section id="tab-beranda" class="tab-content space-y-6">
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-sky-900 via-indigo-950 to-slate-900 border border-slate-700/80 p-6 md:p-10 shadow-2xl">
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                        <i class="fa-solid fa-sparkles"></i> Generator Visual Matematika Kontekstual V3.0
+                    </span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                        Visualisasikan Konsep Matematika dengan <span class="text-sky-400">Vektor Presisi</span> & Kontekstual.
+                    </h2>
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+                        Ubah rumus abstrak menjadi diagram visual bermakna untuk soal Pythagoras, Trigonometri, Kesebangunan, Lingkaran, dan Geometri Ruang lengkap dengan generator lembar kerja A4 print-ready!
+                    </p>
+                    <div class="flex flex-wrap items-center gap-3 pt-2">
+                        <button onclick="switchTab('wizard')" class="bg-sky-500 hover:bg-sky-400 text-white font-semibold px-5 py-2.5 rounded-xl transition shadow-lg shadow-sky-500/25 flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Mulai Wizard Buat Visual
+                        </button>
+                        <button onclick="switchTab('lkpd')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-medium px-5 py-2.5 rounded-xl transition">
+                            <i class="fa-solid fa-file-pdf mr-1.5"></i> Studio LKPD Printable
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats & Quick Features -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-shapes"></i></div>
+                    <div>
+                        <div class="text-2xl font-bold text-white">14</div>
+                        <div class="text-xs text-slate-400">Model Visual Kontekstual</div>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-calculator"></i></div>
+                    <div>
+                        <div class="text-2xl font-bold text-white">100%</div>
+                        <div class="text-xs text-slate-400">Otomatisasi Geometri</div>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-lightbulb"></i></div>
+                    <div>
+                        <div class="text-2xl font-bold text-white">HOTS</div>
+                        <div class="text-xs text-slate-400">Penyusun Soal Naratif</div>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-print"></i></div>
+                    <div>
+                        <div class="text-2xl font-bold text-white">A4 ready</div>
+                        <div class="text-xs text-slate-400">Export Kop & Kunci Jawaban</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inspirasi Hari Ini Presets Grid -->
+            <div>
+                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-amber-400"></i> Inspirasi & Preset Visual Populer
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="home-preset-grid"></div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: BUAT VISUAL WIZARD ================= -->
+        <section id="tab-wizard" class="tab-content hidden space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+                <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-sky-400"></i> Wizard Pembuat Visual Kontekstual
+                </h2>
+                <p class="text-slate-400 text-sm mb-6">Pilih jenjang, materi, dan model visual kontekstual untuk langsung digenerate.</p>
+
+                <!-- Step 1: Jenjang -->
+                <div class="space-y-3 mb-6">
+                    <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Langkah 1: Pilih Jenjang Pendidikan</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="setWizardGrade('SD')" id="w-grade-SD" class="w-grade-btn border-2 border-sky-500 bg-sky-500/10 text-white font-medium p-3 rounded-xl flex flex-col items-center gap-2">
+                            <i class="fa-solid fa-child text-2xl text-sky-400"></i> SD (Kelas 4-6)
+                        </button>
+                        <button onclick="setWizardGrade('SMP')" id="w-grade-SMP" class="w-grade-btn border border-slate-700 bg-slate-800/80 text-slate-400 hover:text-white p-3 rounded-xl flex flex-col items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-2xl text-indigo-400"></i> SMP (Kelas 7-9)
+                        </button>
+                        <button onclick="setWizardGrade('SMA')" id="w-grade-SMA" class="w-grade-btn border border-slate-700 bg-slate-800/80 text-slate-400 hover:text-white p-3 rounded-xl flex flex-col items-center gap-2">
+                            <i class="fa-solid fa-university text-2xl text-purple-400"></i> SMA (Kelas 10-12)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Model Konteks Grid -->
+                <div class="space-y-3 mb-6">
+                    <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Langkah 2: Pilih Model Konteks Visual (14 Pilihan)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-96 overflow-y-auto p-1" id="wizard-models-list"></div>
+                </div>
+
+                <!-- Step 3: Button Generate -->
+                <div class="pt-4 border-t border-slate-700 flex justify-end">
+                    <button onclick="applyWizardSelection()" class="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center gap-2">
+                        Buka di Canvas Studio <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: MATEMATIKA & SVG CANVAS ================= -->
+        <section id="tab-matematika" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Controls Sidebar (4 cols) -->
+            <div class="lg:col-span-4 space-y-5">
+                <!-- Context Selector Card -->
+                <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-4 shadow-lg space-y-3">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                        <span>Pilih Konteks Model</span>
+                        <span id="active-grade-badge" class="px-2 py-0.5 rounded text-[10px] bg-sky-500/20 text-sky-300 border border-sky-500/30">SMP</span>
+                    </label>
+                    <select id="model-select" onchange="changeModel(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                        <option value="kapal_mercusuar">🚢 Kapal & Mercusuar (Pythagoras / Trigonometri)</option>
+                        <option value="tangga_dinding">🪜 Tangga & Dinding (Pythagoras)</option>
+                        <option value="pohon_bayangan">🌳 Pohon & Bayangan Sinar (Kesebangunan)</option>
+                        <option value="pesawat_ketinggian">✈️ Pesawat & Sudut Elevasi (Trigonometri)</option>
+                        <option value="tebing_kapal_sma">🏔️ Tebing & 2 Kapal (Sudut Depresi SMA)</option>
+                        <option value="pecahan_pizza">🍕 Pecahan Pizza & Pie (Juring Lingkaran SD/SMP)</option>
+                        <option value="bianglala_ferris">🎡 Bianglala Ferris Wheel (Sudut Pusat Lingkaran)</option>
+                        <option value="taman_kota">🏞️ Taman Kota (Luas & Keliling Gabungan)</option>
+                        <option value="kuda_atap">🏠 Kuda-kuda Atap Rumah (Pythagoras Simetri)</option>
+                        <option value="rangka_jembatan">🌉 Rangka Jembatan Warren Truss (Kesebangunan)</option>
+                        <option value="layang_layang">🪁 Layang-Layang (Diagonal & Luas SD/SMP)</option>
+                        <option value="lapangan_olahraga">🏃 Lapangan Olahraga Track (Keliling Gabungan)</option>
+                        <option value="peta_grid">🗺️ Peta Grid & Skala (Rasio Skala Map SD)</option>
+                        <option value="bak_air_3d">🧊 Bak Air Balok 3D (Volume Prisma 3D SMA/SMP)</option>
+                    </select>
+                </div>
+
+                <!-- Mathematical Parameter Sliders Card -->
+                <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-4 shadow-lg space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+                        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-sky-400"></i> Control Parameter Matematika
+                        </h3>
+                        <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="auto-calc-toggle" checked onchange="toggleAutoCalc()" class="rounded bg-slate-900 border-slate-700 text-sky-500 focus:ring-sky-500">
+                            Auto Formula
+                        </label>
+                    </div>
+
+                    <!-- Dynamic Sliders Container -->
+                    <div id="dynamic-params-container" class="space-y-3.5"></div>
+                </div>
+
+                <!-- Display Settings & Theme Presets -->
+                <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-4 shadow-lg space-y-3">
+                    <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-palette text-purple-400"></i> Tema Preset & Overlay SVG
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="setCanvasTheme('blueprint')" class="p-2 rounded-lg bg-slate-900 border border-blue-600 text-blue-300 hover:border-blue-400 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-blue-700 inline-block"></span> Blueprint
+                        </button>
+                        <button onclick="setCanvasTheme('chalkboard')" class="p-2 rounded-lg bg-slate-900 border border-emerald-600 text-emerald-300 hover:border-emerald-400 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-800 inline-block"></span> Chalkboard
+                        </button>
+                        <button onclick="setCanvasTheme('modern')" class="p-2 rounded-lg bg-slate-900 border border-slate-400 text-slate-200 hover:border-slate-300 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-white inline-block"></span> Modern White
+                        </button>
+                        <button onclick="setCanvasTheme('dark')" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 hover:border-slate-500 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-slate-900 inline-block"></span> Dark Tech
+                        </button>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-700/60 space-y-2 text-xs text-slate-300">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="toggle-right-angle" checked onchange="renderSVG()" class="rounded bg-slate-900 border-slate-700 text-sky-500">
+                            Siku-siku & Sudut Indicator
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="toggle-grid-lines" onchange="renderSVG()" class="rounded bg-slate-900 border-slate-700 text-sky-500">
+                            Garis Bantu / Grid Matrik
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="toggle-vertex-labels" checked onchange="renderSVG()" class="rounded bg-slate-900 border-slate-700 text-sky-500">
+                            Label Titik Sudut (A, B, C)
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SVG Visual Canvas Container (8 cols) -->
+            <div class="lg:col-span-8 flex flex-col space-y-4">
+                
+                <!-- Main SVG Box -->
+                <div class="relative bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-2xl flex flex-col items-center justify-center overflow-hidden min-h-[420px]" id="canvas-wrapper">
+                    <div class="w-full flex items-center justify-between text-xs text-slate-400 mb-2 px-1">
+                        <span class="flex items-center gap-1.5 font-mono">
+                            <i class="fa-solid fa-circle text-emerald-400 text-[8px]"></i> Real-time SVG Vector Render
+                        </span>
+                        <span class="bg-slate-900/80 px-2.5 py-1 rounded-full text-slate-300 font-medium">
+                            Klik Badge Variabel pada SVG untuk Ubah Variabel Soal <i class="fa-solid fa-hand-pointer text-amber-400 ml-1"></i>
+                        </span>
+                    </div>
+
+                    <div id="svg-container" class="w-full max-w-2xl transition-all duration-300 theme-blueprint rounded-xl p-4 border shadow-inner flex items-center justify-center"></div>
+
+                    <div class="w-full mt-3 p-3 rounded-xl bg-slate-900/90 border border-slate-700/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-300">Variabel Target Soal (`?`):</span>
+                            <span id="target-var-display" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/40">Sisi Miring (c)</span>
+                        </div>
+                        <div class="text-slate-400 italic">
+                            Klik badge mana saja di SVG untuk berganti: [Nilai Tepat] &rarr; [? Target] &rarr; [Sembunyi]
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-800/80 border border-slate-700 p-3.5 rounded-2xl">
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fa-solid fa-circle-info text-sky-400"></i> Soal otomatis diperbarui setiap ubah parameter & target.
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="saveToCollection()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-bookmark"></i> Simpan ke Koleksi
+                        </button>
+                        <button onclick="switchTab('soal')" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-sky-600/30">
+                            <i class="fa-solid fa-file-pen"></i> Lihat Soal & Pembahasan &rarr;
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ================= TAB 4: BUAT SOAL & PEMBAHASAN ================= -->
+        <section id="tab-soal" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left: Question Configurator (4 cols) -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-4">
+                        <h3 class="font-bold text-white text-base flex items-center gap-2 border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-gear text-sky-400"></i> Pengaturan Format Soal
+                        </h3>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-1">Tipe Soal</label>
+                            <select id="question-type-select" onchange="generateQuestionText()" class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl p-2.5">
+                                <option value="pg">Pilihan Ganda (PG 4 Opsi)</option>
+                                <option value="isian">Isian Singkat</option>
+                                <option value="uraian">Uraian / Langkah Pemecahan</option>
+                                <option value="hots">Soal Cerita HOTS Kontekstual</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-1">Tingkat Kesulitan / Bloom Taxonomy</label>
+                            <select id="difficulty-select" onchange="generateQuestionText()" class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl p-2.5">
+                                <option value="sedang">Sedang (C3 - Aplikasi)</option>
+                                <option value="mudah">Mudah (C2 - Pemahaman)</option>
+                                <option value="hots">Tinggi (C4/C5 - HOTS Analisis)</option>
+                            </select>
+                        </div>
+
+                        <!-- Gemini AI Prompt Helper -->
+                        <div class="pt-3 border-t border-slate-700/80 space-y-2">
+                            <button onclick="toggleGeminiPromptBox()" class="w-full bg-slate-900 hover:bg-slate-950 text-purple-300 border border-purple-500/30 text-xs font-medium py-2 rounded-xl flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-robot text-purple-400"></i> Ide Prompt AI Gemini / ChatGPT
+                            </button>
+                            <div id="gemini-prompt-box" class="hidden text-xs bg-slate-950 p-3 rounded-xl border border-purple-500/30 space-y-2 text-slate-300 font-mono">
+                                <p class="text-[11px] text-purple-300 font-sans">Salin prompt ini ke Gemini AI untuk variasi soal narasi tambahan:</p>
+                                <div id="ai-prompt-text" class="select-all bg-slate-900 p-2 rounded border border-slate-800 break-words"></div>
+                                <button onclick="copyAIPrompt()" class="text-[10px] bg-purple-700 text-white px-2 py-1 rounded hover:bg-purple-600">
+                                    <i class="fa-solid fa-copy mr-1"></i>Salin Prompt
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="generateQuestionText()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 rounded-xl transition shadow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate"></i> Generate Ulang Soal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Rendered Question & Pembahasan Card (8 cols) -->
+                <div class="lg:col-span-8 space-y-5">
+                    
+                    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-2">
+                                <i class="fa-solid fa-file-lines"></i> Teks Soal Otomatis
+                            </span>
+                            <button onclick="copyQuestionToClipboard()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg transition">
+                                <i class="fa-solid fa-copy mr-1"></i>Salin Teks Soal
+                            </button>
+                        </div>
+
+                        <div id="generated-narrative-text" class="text-base text-slate-100 font-medium leading-relaxed bg-slate-900/60 p-4 rounded-xl border border-slate-700/60"></div>
+                        <div id="pg-choices-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                    </div>
+
+                    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                                <i class="fa-solid fa-key"></i> Kunci Jawaban & Pembahasan Lengkap
+                            </span>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                                Sesuai Target ?
+                            </span>
+                        </div>
+
+                        <div id="step-by-step-solution" class="text-sm text-slate-200 font-mono space-y-2 bg-slate-900/80 p-4 rounded-xl border border-slate-700/80 leading-relaxed"></div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: EDITOR ANNOTATIONS ================= -->
+        <section id="tab-editor" class="tab-content hidden space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-sky-400"></i> Editor Anotasi & Label Kustom
+                    </h2>
+                    <p class="text-slate-400 text-sm">Tambahkan catatan khusus, simbol matematika, atau garis sudut tambahan di atas visual.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="space-y-3">
+                        <label class="text-xs font-semibold text-slate-300 block">Teks Catatan Baru</label>
+                        <input type="text" id="custom-annotation-input" placeholder="contoh: Sinar Matahari 45°" class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl p-2.5">
+                        <button onclick="addCustomAnnotation()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-medium text-xs py-2.5 rounded-xl transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Tambah ke Diagram
+                        </button>
+                    </div>
+
+                    <div class="md:col-span-2 bg-slate-900 p-4 rounded-xl border border-slate-700/80 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300">Daftar Anotasi Kustom Aktif</h4>
+                        <div id="annotations-list-container" class="space-y-1.5 max-h-36 overflow-y-auto text-xs text-slate-400"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 6: KOLEKSI BANK ================= -->
+        <section id="tab-koleksi" class="tab-content hidden space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-folder-open text-amber-400"></i> Koleksi Bank Visual & Soal
+                        </h2>
+                        <p class="text-slate-400 text-sm">Diagram dan soal yang tersimpan di memori lokal per jenjang.</p>
+                    </div>
+                    <button onclick="clearAllCollection()" class="text-xs bg-red-600/20 text-red-300 hover:bg-red-600 hover:text-white border border-red-500/30 px-3 py-1.5 rounded-lg transition">
+                        <i class="fa-solid fa-trash mr-1"></i> Kosongkan Koleksi
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="collection-items-grid"></div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 7: STUDIO LKPD PRINTABLE ================= -->
+        <section id="tab-lkpd" class="tab-content hidden space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700 pb-3">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-print text-sky-400"></i> Studio Lembar Kerja Peserta Didik (LKPD A4)
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="text-slate-300 font-semibold block mb-1">Nama Sekolah / Instansi</label>
+                        <input type="text" id="lkpd-school-input" value="SMP NEGERI 1 MATHVISUAL STUDIO" oninput="updateLKPDHeader()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="text-slate-300 font-semibold block mb-1">Mata Pelajaran / Topik</label>
+                        <input type="text" id="lkpd-topic-input" value="Matematika / Trigonometri & Pythagoras" oninput="updateLKPDHeader()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="text-slate-300 font-semibold block mb-1">Kelas & Alokasi Waktu</label>
+                        <input type="text" id="lkpd-class-input" value="Kelas VIII / 20 Menit" oninput="updateLKPDHeader()" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded-lg">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-950 p-4 lg:p-8 rounded-2xl overflow-x-auto flex justify-center">
+                <div id="printable-lkpd-paper" class="a4-page border border-slate-300 shadow-2xl rounded-sm font-sans space-y-6 text-slate-900">
+                    <div class="border-b-4 border-slate-900 pb-3 text-center space-y-1">
+                        <h2 id="lkpd-school-display" class="font-extrabold text-xl uppercase tracking-wider">SMP NEGERI 1 MATHVISUAL STUDIO</h2>
+                        <p id="lkpd-topic-display" class="font-semibold text-sm text-slate-700">LEMBAR KERJA PESERTA DIDIK (LKPD) - GEOMETRI & TRIGONOMETRI</p>
+                        <p id="lkpd-class-display" class="text-xs text-slate-600">Materi: Penerapan Pythagoras / Trigonometri Kontekstual</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 border border-slate-800 p-3 rounded text-xs font-semibold">
+                        <div>Nama Siswa : ___________________________</div>
+                        <div>Kelas / No  : ____________ / ____________</div>
+                        <div>Kelompok   : ___________________________</div>
+                        <div>Tanggal    : ___________________________</div>
+                    </div>
+
+                    <div class="border border-slate-300 rounded p-4 flex flex-col items-center justify-center bg-slate-50">
+                        <div class="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Lampiran Visual Diagram</div>
+                        <div id="lkpd-svg-render-slot" class="w-full max-w-md flex justify-center"></div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-sm uppercase tracking-wide text-slate-800 border-b border-slate-300 pb-1">Soal & Petunjuk Pengerjaan:</h4>
+                        <div id="lkpd-narrative-display" class="text-sm leading-relaxed font-medium"></div>
+                        <div id="lkpd-options-display" class="grid grid-cols-2 gap-2 text-xs font-medium pt-2"></div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-400 p-4 rounded min-h-[160px] space-y-2">
+                        <span class="text-xs font-semibold text-slate-400 uppercase">Lembar Corat-coret / Langkah Penyelesaian Siswa:</span>
+                    </div>
+
+                    <div class="border-t border-slate-300 pt-3 text-xs text-slate-600 space-y-1">
+                        <span class="font-bold text-slate-800">[ Lampiran Khusus Guru - Kunci Jawaban ]:</span>
+                        <div id="lkpd-solution-display" class="font-mono bg-slate-100 p-2 rounded"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="no-print bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+                © 2026 <span class="text-slate-300 font-semibold">MathVisual Generator Studio</span>. Media Pembelajaran Matematika Kontekstual.
+            </div>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span><i class="fa-solid fa-shapes text-sky-400 mr-1"></i>14 Model Vektor</span>
+                <span><i class="fa-solid fa-bolt text-amber-400 mr-1"></i>Presisi Matematis</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
